@@ -1,7 +1,6 @@
 package person
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	"log"
@@ -14,31 +13,31 @@ type Repo struct {
 func (repo *Repo) Get(c *gin.Context) {
 	var m Model
 
-	_ = repo.DB.Get(&m, "SELECT * FROM person WHERE first_name=$1", "Jason")
-	fmt.Printf("%#v\n", m)
-
 	err := repo.DB.Get(&m, "SELECT * FROM person WHERE id = $1", c.Param("id"))
-	log.Print(c.Param("id"))
 
 	if err != nil {
+		log.Print(err)
 		c.AbortWithStatus(404)
 	} else {
 		c.JSON(200, m)
 	}
-
-	log.Print(m)
 }
 
 func (repo *Repo) Create(c *gin.Context) {
 	var m Model
 
-	c.Bind(&m)
+	c.BindJSON(&m)
 
-	m.FirstName = "abc"
 	//m.Created = int32(time.Now().Unix())
 
-	//repo.db.Save(&m)
-	c.JSON(201, m)
+	_, err := repo.DB.Exec("INSERT INTO person (first_name, last_name, email) VALUES ($1, $2, $3)", m.FirstName, m.LastName, m.Email)
+
+	if err != nil {
+		log.Print(err)
+		c.JSON(422, err)
+	} else {
+		c.JSON(201, m)
+	}
 }
 
 func (repo *Repo) Delete(c *gin.Context) {

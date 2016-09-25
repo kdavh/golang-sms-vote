@@ -5,4 +5,5 @@ type Model struct {
 	LastName  string `db:"last_name"`
 	// CreatedAt int32  `db:"created_at"`
 	Email string
+	Id    int
 }
