@@ -10,7 +10,10 @@ func Up_20160922212245(txn *sql.Tx) {
         CREATE TABLE person (
             first_name text,
             last_name text,
-            email text,
+            email text NOT NULL,
+            created_at timestamp,
+            updated_at timestamp,
+            deleted_at timestamp,
             id SERIAL PRIMARY KEY
         );
 
@@ -18,6 +21,9 @@ func Up_20160922212245(txn *sql.Tx) {
             country text,
             city text NULL,
             telcode integer,
+            created_at timestamp,
+            updated_at timestamp,
+            deleted_at timestamp,
             id SERIAL PRIMARY KEY
         )
     `)

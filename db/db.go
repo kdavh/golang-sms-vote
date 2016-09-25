@@ -4,14 +4,14 @@ import (
 	//"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/jmoiron/sqlx"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/kylelemons/go-gypsy/yaml"
-	_ "github.com/lib/pq"
 	"log"
 	"path/filepath"
 )
 
-func Init() (db *sqlx.DB) {
+func Init() (db *gorm.DB) {
 	var dbEnv string
 	if gin.IsDebugging() {
 		dbEnv = "development"
@@ -28,10 +28,13 @@ func Init() (db *sqlx.DB) {
 
 	openCmd, _ := f.Get(fmt.Sprintf("%s.open", dbEnv))
 
-	d, err := sqlx.Connect("postgres", openCmd)
+	d, err := gorm.Open("postgres", openCmd)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// config
+	d.SingularTable(true)
 
 	return d
 }

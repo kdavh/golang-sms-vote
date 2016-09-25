@@ -2,21 +2,20 @@ package person
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/jmoiron/sqlx"
+	"github.com/jinzhu/gorm"
 	"log"
 )
 
 type Repo struct {
-	DB *sqlx.DB
+	DB *gorm.DB
 }
 
 func (repo *Repo) Get(c *gin.Context) {
 	var m Model
 
-	err := repo.DB.Get(&m, "SELECT * FROM person WHERE id = $1", c.Param("id"))
+	dbResult := repo.DB.First(&m, c.Param("id"))
 
-	if err != nil {
-		log.Print(err)
+	if dbResult.RecordNotFound() {
 		c.AbortWithStatus(404)
 	} else {
 		c.JSON(200, m)
@@ -28,13 +27,11 @@ func (repo *Repo) Create(c *gin.Context) {
 
 	c.BindJSON(&m)
 
-	//m.Created = int32(time.Now().Unix())
+	dbResult := repo.DB.Create(&m)
 
-	_, err := repo.DB.Exec("INSERT INTO person (first_name, last_name, email) VALUES ($1, $2, $3)", m.FirstName, m.LastName, m.Email)
-
-	if err != nil {
-		log.Print(err)
-		c.JSON(422, err)
+	if dbResult.Error != nil {
+		log.Print(dbResult.Error)
+		c.JSON(422, dbResult.Error)
 	} else {
 		c.JSON(201, m)
 	}
