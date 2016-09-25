@@ -10,13 +10,15 @@ func Up_20160922212245(txn *sql.Tx) {
         CREATE TABLE person (
             first_name text,
             last_name text,
-            email text
+            email text,
+            id SERIAL PRIMARY KEY
         );
 
         CREATE TABLE place (
             country text,
             city text NULL,
-            telcode integer
+            telcode integer,
+            id SERIAL PRIMARY KEY
         )
     `)
 	txn.Exec("INSERT INTO person (first_name, last_name, email) VALUES ($1, $2, $3)", "Jason", "Moiron", "jmoiron@jmoiron.net")
