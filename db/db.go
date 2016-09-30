@@ -8,7 +8,9 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/kylelemons/go-gypsy/yaml"
 	"log"
+	"path"
 	"path/filepath"
+	"runtime"
 )
 
 func Init() (db *gorm.DB) {
@@ -19,7 +21,17 @@ func Init() (db *gorm.DB) {
 		dbEnv = "production"
 	}
 
-	cfgFile := filepath.Join("db", "dbconf.yml")
+	return InitEnv(dbEnv)
+}
+
+func InitEnv(dbEnv string) (db *gorm.DB) {
+	_, filename, _, ok := runtime.Caller(0)
+
+	if !ok {
+		panic("No caller information")
+	}
+
+	cfgFile := filepath.Join(path.Dir(filename), "dbconf.yml")
 
 	f, err := yaml.ReadFile(cfgFile)
 	if err != nil {
@@ -30,6 +42,7 @@ func Init() (db *gorm.DB) {
 
 	d, err := gorm.Open("postgres", openCmd)
 	if err != nil {
+		log.Print("hello")
 		log.Fatal(err)
 	}
 
@@ -37,4 +50,11 @@ func Init() (db *gorm.DB) {
 	d.SingularTable(true)
 
 	return d
+}
+
+func InjectionMiddleware(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set("DB", db)
+		c.Next()
+	}
 }
