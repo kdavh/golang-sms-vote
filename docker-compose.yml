@@ -1,0 +1,27 @@
+web:
+  build: .
+  dockerfile: ./Dockerfile
+  volumes:
+    - .:/go/src/github.com/kdavh/gin-sms-vote
+  ports:
+    - "8080:8080"
+  links:
+    - web_db
+  environment:
+    DB_HOST: web_db
+    DB_USER: postgres
+    DB_PASSWORD: ${SMS_VOTE_POSTGRES_PASSWORD}
+    DB_NAME: sms_vote_development
+    GIN_MODE: debug
+    PORT: "8080"
+  working_dir: /go/src/github.com/kdavh/gin-sms-vote
+  command: "go run main.go"
+
+web_db:
+  image: postgres:9.1
+  volumes:
+    - sms_vote_db_data:/var/lib/postgresql/
+  environment:
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: ${SMS_VOTE_POSTGRES_PASSWORD}
+    POSTGRES_DB: sms_vote_development

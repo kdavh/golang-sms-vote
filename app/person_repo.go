@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/jinzhu/gorm"
-	//"log"
+	"log"
 )
 
 type PersonRepo struct {
@@ -17,6 +17,8 @@ func (repo *PersonRepo) Get(id string) (Person, error) {
 	if dbResult.RecordNotFound() {
 		return m, dbResult.Error
 	} else {
+		log.Print(dbResult)
+
 		return m, nil
 	}
 }

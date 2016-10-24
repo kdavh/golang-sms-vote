@@ -1,0 +1,17 @@
+FROM golang:1.7
+
+# Install beego and the bee dev tool
+RUN go get github.com/gin-gonic/gin && \
+  go get github.com/jinzhu/gorm && \
+  go get github.com/jinzhu/gorm/dialects/postgres && \
+  go get github.com/kylelemons/go-gypsy/yaml
+
+# Expose the application on port 8080
+# EXPOSE 8080
+
+# Set the entry point of the container to the bee command that runs the
+# application and watches for changes
+# CMD ["go", "run", "main.go"]
+
+# dk build -t sms-vote-image
+# dk run -it --rm --name sms-vote-instance -p 8080:8080 -v "$(pwd):/go/src/github.com/kdavh/gin-sms-vote" -w /go/src/github.com/kdavh/gin-sms-vote sms-vote-image
