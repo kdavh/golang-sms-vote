@@ -1,31 +1,42 @@
 package app
 
 import (
-	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"github.com/kdavh/gin-sms-vote/db"
 	"github.com/stretchr/testify/assert"
+	"log"
+	"os"
+	"regexp"
 	"strconv"
 	"testing"
 )
 
 func TestMain(m *testing.M) {
-	// we register an sql driver named "txdb"
-	//txdb.Register("txdb", "postgres", "root@/txdb_test")
+	if matched, _ := regexp.MatchString("_test$", os.Getenv("DB_NAME")); !matched {
+		log.Fatal("must be using test database, check config")
+	}
 
-	m.Run()
+	os.Exit(m.Run())
 }
 
-func initTestDB() *gorm.DB {
-	d := db.InitEnv("test")
-	d.AutoMigrate(&Person{})
-
-	return d
-}
-
-func TestPersonRepo(t *testing.T) {
+func TestPersonRepoCreate(t *testing.T) {
 	// initialize DB as transaction for easy rollback
-	d := initTestDB().Begin()
+	d := InitDB().Begin()
+	defer d.Close()
+
+	firstName := "asdf"
+	p := Person{FirstName: firstName, LastName: "ddd", Email: "sdjdkd"}
+
+	repo := PersonRepo{DB: d}
+
+	err := repo.Create(&p)
+
+	assert.Equal(t, d.NewRecord(p), false)
+	assert.Nil(t, err)
+}
+
+func TestPersonRepoGet(t *testing.T) {
+	// initialize DB as transaction for easy rollback
+	d := InitDB().Begin()
 	defer d.Close()
 
 	firstName := "asdf"

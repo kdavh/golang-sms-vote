@@ -1,0 +1,17 @@
+web:
+  extends:
+    file: ../docker-compose.base.yml
+    service: web
+  links:
+    - web_db
+  environment:
+    DB_NAME: sms_vote_development
+    GIN_MODE: debug
+  command: "go run main.go"
+
+web_db:
+  extends:
+    file: ../docker-compose.base.yml
+    service: web_db
+  environment:
+    POSTGRES_DB: sms_vote_development

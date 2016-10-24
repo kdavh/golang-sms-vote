@@ -6,12 +6,7 @@ import (
 
 type Person struct {
 	gorm.Model
-	FirstName string `db:"first_name"`
-	LastName  string `db:"last_name"`
-	// CreatedAt int32  `db:"created_at"`
-	Email string
+	FirstName string `db:"first_name" binding:"required"`
+	LastName  string `db:"last_name" binding:"required"`
+	Email     string `binding:"required"`
 }
-
-//func (Person) TableName() string {
-//return "person"
-//}

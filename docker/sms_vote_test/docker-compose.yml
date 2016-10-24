@@ -1,0 +1,17 @@
+web:
+  extends:
+    file: ../docker-compose.base.yml
+    service: web
+  links:
+    - web_db
+  environment:
+    DB_NAME: sms_vote_test
+    GIN_MODE: test
+  command: "go test -v ./app/..."
+
+web_db:
+  extends:
+    file: ../docker-compose.base.yml
+    service: web_db
+  environment:
+    POSTGRES_DB: sms_vote_test

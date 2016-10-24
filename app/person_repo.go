@@ -2,7 +2,6 @@ package app
 
 import (
 	"github.com/jinzhu/gorm"
-	"log"
 )
 
 type PersonRepo struct {
@@ -17,9 +16,18 @@ func (repo *PersonRepo) Get(id string) (Person, error) {
 	if dbResult.RecordNotFound() {
 		return m, dbResult.Error
 	} else {
-		log.Print(dbResult)
-
 		return m, nil
+	}
+}
+
+func (repo *PersonRepo) Create(p *Person) []error {
+	dbResult := repo.DB.Create(&p)
+
+	if dbResult.Error != nil {
+		errs := dbResult.GetErrors()
+		return errs
+	} else {
+		return nil
 	}
 }
 
@@ -32,21 +40,6 @@ func (repo *PersonRepo) Get(id string) (Person, error) {
 //c.AbortWithStatus(404)
 //} else {
 //c.JSON(200, m)
-//}
-//}
-
-//func (repo *PersonRepo) Create(c *gin.Context) {
-//var m Person
-
-//c.BindJSON(&m)
-
-//dbResult := repo.DB.Create(&m)
-
-//if dbResult.Error != nil {
-//log.Print(dbResult.Error)
-//c.JSON(422, dbResult.Error)
-//} else {
-//c.JSON(201, m)
 //}
 //}
 
